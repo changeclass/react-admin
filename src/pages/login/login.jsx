@@ -13,13 +13,30 @@ export default class Login extends Component {
   formRef = React.createRef()
   // 表单提交事件
   handleSubmit = () => {
+    // 此事件只有表单验证通过后才会触发
     console.log(this.formRef.current)
     // 调用 getFieldValue 方法获取Form.Item.name 的值 （即username和password）
     const { getFieldValue } = this.formRef.current
     const { username, password } = getFieldValue()
     console.log(username, password)
   }
-
+  // 自定义验证-密码
+  // AntD4中已经没有callback回调函数了，而是返回Promise对象
+  validatePwd = (rule, value) => {
+    // value 表示当前输入框传入的值
+    console.log(rule, value)
+    if (!value) {
+      return Promise.reject('密码必须输入')
+    } else if (value.length < 5) {
+      return Promise.reject('密码长度不能小于4')
+    } else if (value.length > 12) {
+      return Promise.reject('密码长度不能大于12')
+    } else if (!/^[a-zA-Z0-9_]+$/.test(value)) {
+      return Promise.reject('密码必须是大写字母、小写字母或下划线组成')
+    } else {
+      return Promise.resolve()
+    }
+  }
   render() {
     return (
       <div className='login'>
@@ -39,8 +56,15 @@ export default class Login extends Component {
           >
             <Form.Item
               name='username'
+              // 声明式验证
               rules={[
-                { required: true, message: 'Please input your username!' }
+                { required: true, whitespace: true, message: '请输入用户名' },
+                { min: 4, message: '用户名最少4位' },
+                { max: 12, message: '用户名最多12位' },
+                {
+                  pattern: /^[a-zA-Z0-9_]+$/,
+                  message: '用户名必须是大写字母、小写字母或下划线组成'
+                }
               ]}
             >
               <Input
@@ -55,9 +79,7 @@ export default class Login extends Component {
             </Form.Item>
             <Form.Item
               name='password'
-              rules={[
-                { required: true, message: 'Please input your password!' }
-              ]}
+              rules={[{ validator: this.validatePwd }]}
             >
               <Input
                 prefix={
