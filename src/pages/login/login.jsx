@@ -7,6 +7,8 @@ import logo from './images/logo.png'
 
 import { reqLogin } from '../../api/index.js'
 import memoryUtils from '../../utils/memoryUtils'
+import storageUtils from '../../utils/storageUtils'
+import { Redirect } from 'react-router-dom'
 /**
  * 登录的路由组件
  */
@@ -30,6 +32,7 @@ export default class Login extends Component {
       // 跳转之前保存user
       const user = res.data
       memoryUtils.user = user // 存到内存中
+      storageUtils.saveUser(user) // 存到Local中
       // 跳转到后台页面(不需要回退)
       this.props.history.replace('/')
     } else {
@@ -55,6 +58,11 @@ export default class Login extends Component {
     }
   }
   render() {
+    // 如果用户已经登录自动跳转管理界面
+    const user = memoryUtils.user
+    if (user && user._id) {
+      return <Redirect to='/' />
+    }
     return (
       <div className='login'>
         <header className='login-header'>

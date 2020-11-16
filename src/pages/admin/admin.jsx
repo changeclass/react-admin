@@ -10,7 +10,7 @@ export default class Admin extends Component {
     // 判断是否存在user
     if (!user || !user._id) {
       // 没有登录，自动跳转
-      return <Redirect to='/logon' />
+      return <Redirect to='/login' />
     } else {
       return <div>Hello {user.username}</div>
     }
