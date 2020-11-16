@@ -1,6 +1,7 @@
 /**
  * 发送异步请求的模块
  * 1. 统一处理请求异常
+ * 2. 异步直接得到data
  */
 import axios from 'axios'
 import { message } from 'antd'
@@ -19,7 +20,7 @@ export default function ajax (url, data = {}, method = 'GET') {
     promise
       .then(response => {
         // 2. 成功调用resolve
-        resolve(response)
+        resolve(response.data)
       })
       .catch(error => {
         console.log(error.message);
