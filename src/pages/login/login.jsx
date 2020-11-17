@@ -3,7 +3,7 @@ import { Form, Input, Button, message } from 'antd'
 import { UserOutlined, LockOutlined } from '@ant-design/icons'
 
 import './login.less'
-import logo from './images/logo.png'
+import logo from '../../assets/images/logo.png'
 
 import { reqLogin } from '../../api/index.js'
 import memoryUtils from '../../utils/memoryUtils'
