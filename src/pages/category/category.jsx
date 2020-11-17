@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { PlusOutlined } from '@ant-design/icons'
+import { PlusOutlined, ArrowRightOutlined } from '@ant-design/icons'
 
 import { Card, Table, Button, message } from 'antd'
 
@@ -41,13 +41,15 @@ export default class Category extends Component {
         render: (text, category) => (
           <span>
             <LinkButton>修改</LinkButton>
-            <LinkButton
-              onClick={() => {
-                this.showSubCategorys(category)
-              }}
-            >
-              查看二级分类
-            </LinkButton>
+            {this.state.parentId === '0' ? (
+              <LinkButton
+                onClick={() => {
+                  this.showSubCategorys(category)
+                }}
+              >
+                查看二级分类
+              </LinkButton>
+            ) : null}
           </span>
         )
       }
@@ -67,8 +69,23 @@ export default class Category extends Component {
       this.setState({ subCategorys: categorys })
     }
   }
+  // 获取一级分类列表
+  showCategorys = (category) => {
+    // 先更新状态在调用
+    this.setState(
+      {
+        parentId: '0',
+        subCategorys: [],
+        parentName: ''
+      },
+      // setState为异步,因此需要使用回调函数
+      () => {
+        this.getCategories()
+      }
+    )
+  }
   // 获取指定分类下的二级分类
-  showSubCategorys = async (category) => {
+  showSubCategorys = (category) => {
     // 先更新状态在调用
     this.setState(
       {
@@ -94,7 +111,16 @@ export default class Category extends Component {
       subCategorys
     } = this.state
     // card的左侧标题
-    const title = '一级分类标题'
+    const title =
+      parentId === '0' ? (
+        '一级分类列表'
+      ) : (
+        <span>
+          <LinkButton onClick={this.showCategorys}>一级分类列表</LinkButton>
+          <ArrowRightOutlined style={{ marginRight: 5 }} />
+          <span>{parentName}</span>
+        </span>
+      )
     // card的右侧按钮
     const extra = (
       <Button icon={<PlusOutlined />} type='primary'>
