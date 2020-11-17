@@ -41,7 +41,9 @@ export default class Category extends Component {
         // 返回需要显示的样式
         render: (text, category) => (
           <span>
-            <LinkButton onClick={this.showUpdate}>修改</LinkButton>
+            <LinkButton onClick={() => this.showUpdate(category)}>
+              修改
+            </LinkButton>
             {this.state.parentId === '0' ? (
               <LinkButton
                 onClick={() => {
@@ -101,6 +103,9 @@ export default class Category extends Component {
   }
   // 取消添加分类或更新分类的对话框
   handleCancel = () => {
+    // 重置表单字段
+    this.form.resetFields()
+    console.log(this.form)
     this.setState({
       showStatus: 0
     })
@@ -117,14 +122,27 @@ export default class Category extends Component {
   }
   /** 更新相关 */
   // 显示更新的对话框
-  showUpdate = () => {
+  showUpdate = (category) => {
+    this.category = category
     this.setState({
       showStatus: 2
     })
   }
   // 更新分类
-  updateCategory = () => {
+  updateCategory = async () => {
+    // 发送请求
+    const categoryId = this.category._id
+    const categoryName = this.form.getFieldValue('name')
+    // 重置表单字段
+    this.form.resetFields()
+    const { status } = await reqUpdateCategory({ categoryId, categoryName })
+    if (status !== 0) return message.error('错误了！')
+
+    message.success('修改成功！')
+    // 隐藏对话框
     this.handleCancel()
+    // 重新获取列表
+    this.getCategories()
   }
   componentDidMount() {
     // 获取一级分类列表
@@ -156,7 +174,8 @@ export default class Category extends Component {
         添加分类
       </Button>
     )
-
+    // 读取指定分类
+    const category = this.category || {}
     return (
       <div>
         <Card title={title} extra={extra}>
@@ -183,7 +202,12 @@ export default class Category extends Component {
           onOk={this.updateCategory}
           onCancel={this.handleCancel}
         >
-          <UpdateForm />
+          <UpdateForm
+            categoryName={category.name}
+            setForm={(form) => {
+              this.form = form
+            }}
+          />
         </Modal>
       </div>
     )

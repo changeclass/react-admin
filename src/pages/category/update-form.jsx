@@ -1,13 +1,20 @@
 import React, { Component } from 'react'
 import { Form, Select, Input, Button } from 'antd'
-
+import PropTypes from 'prop-types'
 const Option = Select.Option
 export default class UpdateForm extends Component {
+  static propTypes = {
+    categoryName: PropTypes.string,
+    setForm: PropTypes.func.isRequired
+  }
   formRef = React.createRef()
-  addCategory() {
-    console.log(this.formRef.current)
+  componentDidMount() {
+    // console.log(this.props)
+    // 将form对象通过setForm传递给父组件
+    this.props.setForm(this.formRef.current)
   }
   render() {
+    const { categoryName } = this.props
     return (
       <Form ref={this.formRef} onFinish={this.addCategory}>
         <Form.Item
@@ -18,7 +25,7 @@ export default class UpdateForm extends Component {
             }
           ]}
           name='name'
-          initialValue='a'
+          initialValue={categoryName}
         >
           <Input placeholder='请输入分类名称' />
         </Form.Item>
