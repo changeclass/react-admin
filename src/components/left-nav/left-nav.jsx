@@ -2,13 +2,7 @@ import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
 
 import { Menu } from 'antd'
-import {
-  AppstoreOutlined,
-  PieChartOutlined,
-  DesktopOutlined,
-  ContainerOutlined,
-  MailOutlined
-} from '@ant-design/icons'
+import { PieChartOutlined, MailOutlined } from '@ant-design/icons'
 
 import './index.less'
 import logo from '../../assets/images/logo.png'
@@ -18,8 +12,8 @@ const { SubMenu } = Menu
 export default class LeftNav extends Component {
   render() {
     return (
-      <div className='left-nav' to='/'>
-        <Link className='left-nav-header'>
+      <div className='left-nav'>
+        <Link className='left-nav-header' to='/home'>
           <img src={logo} alt='logo' />
           <h1>谷粒后台</h1>
         </Link>
