@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { PlusOutlined, ArrowRightOutlined } from '@ant-design/icons'
 
-import { Card, Table, Button, message } from 'antd'
+import { Card, Table, Button, message, Modal } from 'antd'
 
 import LinkButton from '../../components/link-button'
 
@@ -40,7 +40,7 @@ export default class Category extends Component {
         // 返回需要显示的样式
         render: (text, category) => (
           <span>
-            <LinkButton>修改</LinkButton>
+            <LinkButton onClick={this.showUpdate}>修改</LinkButton>
             {this.state.parentId === '0' ? (
               <LinkButton
                 onClick={() => {
@@ -70,7 +70,7 @@ export default class Category extends Component {
     }
   }
   // 获取一级分类列表
-  showCategorys = (category) => {
+  showCategorys = () => {
     // 先更新状态在调用
     this.setState(
       {
@@ -98,6 +98,33 @@ export default class Category extends Component {
       }
     )
   }
+  // 取消添加分类或更新分类的对话框
+  handleCancel = () => {
+    this.setState({
+      showStatus: 0
+    })
+  }
+  // 显示添加的对话框
+  showAdd = () => {
+    this.setState({
+      showStatus: 1
+    })
+  }
+  // 添加分类
+  AddCategory = () => {
+    this.handleCancel()
+  }
+  /** 更新相关 */
+  // 显示更新的对话框
+  showUpdate = () => {
+    this.setState({
+      showStatus: 2
+    })
+  }
+  // 更新分类
+  updateCategory = () => {
+    this.handleCancel()
+  }
   componentDidMount() {
     // 获取一级分类列表
     this.getCategories()
@@ -108,7 +135,8 @@ export default class Category extends Component {
       loading,
       parentId,
       parentName,
-      subCategorys
+      subCategorys,
+      showStatus
     } = this.state
     // card的左侧标题
     const title =
@@ -123,8 +151,8 @@ export default class Category extends Component {
       )
     // card的右侧按钮
     const extra = (
-      <Button icon={<PlusOutlined />} type='primary'>
-        Search
+      <Button icon={<PlusOutlined />} type='primary' onClick={this.showAdd}>
+        添加分类
       </Button>
     )
 
@@ -140,6 +168,26 @@ export default class Category extends Component {
             pagination={{ defaultPageSize: 5, showQuickJumper: true }}
           ></Table>
         </Card>
+        <Modal
+          title='添加分类'
+          visible={showStatus === 1}
+          onOk={this.AddCategory}
+          onCancel={this.handleCancel}
+        >
+          <p>Some contents...</p>
+          <p>Some contents...</p>
+          <p>Some contents...</p>
+        </Modal>
+        <Modal
+          title='更新分类'
+          visible={showStatus === 2}
+          onOk={this.updateCategory}
+          onCancel={this.handleCancel}
+        >
+          <p>Some contents...</p>
+          <p>Some contents...</p>
+          <p>Some contents...</p>
+        </Modal>
       </div>
     )
   }
