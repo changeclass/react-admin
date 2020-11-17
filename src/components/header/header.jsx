@@ -3,9 +3,11 @@ import { withRouter } from 'react-router-dom'
 import LinkButton from '../link-button'
 import { formateDate } from '../../utils/dateUtils'
 import memoryUtils from '../../utils/memoryUtils.js'
+import storageUtils from '../../utils/storageUtils'
 import { reqWeather } from '../../api/index'
 import menuList from '../../config/menuConfig'
 import './index.less'
+import { message, Modal } from 'antd'
 // 顶部组件
 class Header extends Component {
   state = {
@@ -15,7 +17,7 @@ class Header extends Component {
   }
 
   getTime = () => {
-    setInterval(() => {
+    this.interValID = setInterval(() => {
       const currentTime = formateDate(Date.now())
       this.setState({ currentTime })
     }, 1000)
@@ -30,6 +32,11 @@ class Header extends Component {
     this.getTime()
     // 获取当前天气显示
     this.getWeather()
+  }
+  // 当前组件卸载之前调用
+  componentWillUnmount() {
+    // 清除定时器
+    clearInterval(this.interValID)
   }
   getTitle = () => {
     // 得到当前请求路径
@@ -52,6 +59,26 @@ class Header extends Component {
       }
     })
     return title
+  }
+  // 退出
+  logout = () => {
+    Modal.confirm({
+      title: 'Confirm',
+      // icon: <ExclamationCircleOutlined />,
+      content: 'Bla bla ...',
+      okText: '确认',
+      cancelText: '取消',
+      onOk: () => {
+        // 删除localStore数据和内存中的数据
+        storageUtils.removeUser()
+        memoryUtils.user = {}
+        // 跳转到Login
+        this.props.history.replace('/login')
+      },
+      onCancel() {
+        message.info('没有退出！')
+      }
+    })
   }
   render() {
     const { currentTime, dayPictureUrl, weather } = this.state
