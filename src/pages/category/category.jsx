@@ -4,7 +4,8 @@ import { PlusOutlined, ArrowRightOutlined } from '@ant-design/icons'
 import { Card, Table, Button, message, Modal } from 'antd'
 
 import LinkButton from '../../components/link-button'
-
+import AddForm from './add-form'
+import UpdateForm from './update-form'
 import {
   reqAddCategory,
   reqUpdateCategory,
@@ -174,9 +175,7 @@ export default class Category extends Component {
           onOk={this.AddCategory}
           onCancel={this.handleCancel}
         >
-          <p>Some contents...</p>
-          <p>Some contents...</p>
-          <p>Some contents...</p>
+          <AddForm />
         </Modal>
         <Modal
           title='更新分类'
@@ -184,9 +183,7 @@ export default class Category extends Component {
           onOk={this.updateCategory}
           onCancel={this.handleCancel}
         >
-          <p>Some contents...</p>
-          <p>Some contents...</p>
-          <p>Some contents...</p>
+          <UpdateForm />
         </Modal>
       </div>
     )
