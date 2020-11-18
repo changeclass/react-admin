@@ -5,6 +5,7 @@ import { Card, Table, Button, message, Modal } from 'antd'
 
 import LinkButton from '../../components/link-button'
 import AddForm from './add-form'
+
 import UpdateForm from './update-form'
 import {
   reqAddCategory,
@@ -59,9 +60,9 @@ export default class Category extends Component {
     ]
   }
   // 发送异步请求获取数据
-  getCategories = async () => {
+  getCategories = async (parentId) => {
     this.setState({ loading: true })
-    const { parentId } = this.state
+    parentId = parentId || this.state.parentId
     const result = await reqCategorys(parentId)
     this.setState({ loading: false })
     if (result.status !== 0) return message.error('获取列表失败')
@@ -105,7 +106,6 @@ export default class Category extends Component {
   handleCancel = () => {
     // 重置表单字段
     this.form.resetFields()
-    console.log(this.form)
     this.setState({
       showStatus: 0
     })
@@ -117,10 +117,25 @@ export default class Category extends Component {
     })
   }
   // 添加分类
-  AddCategory = () => {
-    this.handleCancel()
+  AddCategory = async () => {
+    this.form
+      .validateFields()
+      .then(async (result) => {
+        const { parentId, categoryName } = this.form.getFieldsValue()
+        console.log(this.form.getFieldsValue())
+        this.form.resetFields()
+        const { status } = await reqAddCategory(categoryName, parentId)
+        if (status !== 0) return message.error('错误了！')
+        message.success('添加成功！')
+        this.handleCancel()
+        this.getCategories()
+      })
+      .catch((err) => {
+        message.error('错误了！')
+      })
   }
   /** 更新相关 */
+
   // 显示更新的对话框
   showUpdate = (category) => {
     this.category = category
@@ -130,19 +145,27 @@ export default class Category extends Component {
   }
   // 更新分类
   updateCategory = async () => {
-    // 发送请求
-    const categoryId = this.category._id
-    const categoryName = this.form.getFieldValue('name')
-    // 重置表单字段
-    this.form.resetFields()
-    const { status } = await reqUpdateCategory({ categoryId, categoryName })
-    if (status !== 0) return message.error('错误了！')
+    this.form
+      .validateFields()
+      .then(async (result) => {
+        console.log(result)
+        // 发送请求
+        const categoryId = this.category._id
+        const categoryName = result.name
+        // const categoryName = this.category.name
 
-    message.success('修改成功！')
-    // 隐藏对话框
-    this.handleCancel()
-    // 重新获取列表
-    this.getCategories()
+        const { status } = await reqUpdateCategory({ categoryId, categoryName })
+        if (status !== 0) return message.error('错误了！')
+
+        message.success('修改成功！')
+        // 隐藏对话框
+        this.handleCancel()
+        // 重新获取列表
+        this.getCategories()
+      })
+      .catch((err) => {
+        message.error('错误了！')
+      })
   }
   componentDidMount() {
     // 获取一级分类列表
@@ -194,7 +217,13 @@ export default class Category extends Component {
           onOk={this.AddCategory}
           onCancel={this.handleCancel}
         >
-          <AddForm />
+          <AddForm
+            categorys={categorys}
+            parentId={parentId}
+            setForm={(form) => {
+              this.form = form
+            }}
+          />
         </Modal>
         <Modal
           title='更新分类'

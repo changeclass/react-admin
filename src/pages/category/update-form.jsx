@@ -1,18 +1,23 @@
 import React, { Component } from 'react'
 import { Form, Select, Input, Button } from 'antd'
 import PropTypes from 'prop-types'
-const Option = Select.Option
+
 export default class UpdateForm extends Component {
   static propTypes = {
     categoryName: PropTypes.string,
     setForm: PropTypes.func.isRequired
   }
   formRef = React.createRef()
+
   componentDidMount() {
     // console.log(this.props)
     // 将form对象通过setForm传递给父组件
+    // this.props.categoryName = this.formRef.current.getFieldValue('name')
+    // console.log(this.formRef.current)
+    // this.formRef.current.resetFields()
     this.props.setForm(this.formRef.current)
   }
+
   render() {
     const { categoryName } = this.props
     return (
