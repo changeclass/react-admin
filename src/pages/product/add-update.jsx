@@ -39,34 +39,38 @@ export default class ProductAddUpdate extends Component {
     const result = await reqCategorys(parentId)
     if (result.status !== 0) return message.error('分类获取失败')
     const categorys = result.data
-    this.initOptions(categorys)
+    // 如果是一级分类
+    if (parentId === '0') {
+      this.initOptions(categorys)
+    } else {
+      // 二级列表
+      return categorys
+    }
   }
-  loadData = (selectedOptions) => {
+  loadData = async (selectedOptions) => {
     // 的到选择的option对象
     const targetOption = selectedOptions[selectedOptions.length - 1]
     // loading效果
     targetOption.loading = true
 
-    // load options lazily
-    setTimeout(() => {
-      targetOption.loading = false
+    // 根据选中的分类请求获取下一级分类
+    const subCategorys = await this.getCategorys(targetOption.value)
+    if (subCategorys && subCategorys.length > 0) {
+      // 生成二级列表options
+      const cOptions = subCategorys.map((c) => ({
+        value: c._id,
+        label: c.name,
+        isLeaf: true
+      }))
       // 某一项的下一级列表
-      targetOption.children = [
-        {
-          label: `${targetOption.label} Dynamic 1`,
-          value: 'dynamic1',
-          isLeaf: true
-        },
-        {
-          label: `${targetOption.label} Dynamic 2`,
-          value: 'dynamic2',
-          isLeaf: true
-        }
-      ]
-      this.setState({
-        options: [...this.state.options]
-      })
-    }, 1000)
+      targetOption.children = cOptions
+    } else {
+      targetOption.isLeaf = true
+    }
+    targetOption.loading = false
+    this.setState({
+      options: [...this.state.options]
+    })
   }
   componentDidMount() {
     this.getCategorys()
