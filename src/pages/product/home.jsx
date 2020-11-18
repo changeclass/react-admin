@@ -79,7 +79,10 @@ export default class ProductHome extends Component {
     searchName: '', // 搜索的关键字
     searchType: 'productName' // 根据哪个字段搜索
   }
+  // 获得商品列表
   getProducts = async (pageNum) => {
+    // 记录当前页码数，方便表格在任意页刷新
+    this.pageNum = pageNum
     this.setState({ loading: true })
     const { searchName, searchType } = this.state
     let result
@@ -102,6 +105,15 @@ export default class ProductHome extends Component {
       total,
       products: list
     })
+  }
+  // 更新状态
+  updateStatus = async (productId, status) => {
+    this.setState({ loading: true })
+    const result = await reqUpdateStatus(productId, status)
+    this.setState({ loading: false })
+    if (result.status !== 0) return message.error('错误')
+    message.success('成功了！')
+    this.getProducts(this.pageNum)
   }
   componentDidMount() {
     this.getProducts(1)
