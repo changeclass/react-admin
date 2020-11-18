@@ -12,6 +12,13 @@ const { TextArea } = Input
 // Product的添加和更新的子路由组件
 export default class ProductAddUpdate extends Component {
   formRef = React.createRef()
+  constructor(props) {
+    super(props)
+    const product = this.props.location.state
+    // 保存是否更新的表示
+    this.isUpdate = !!product
+    this.product = product || {}
+  }
   state = {
     options: []
   }
@@ -23,13 +30,33 @@ export default class ProductAddUpdate extends Component {
       return Promise.reject('？？？')
     }
   }
-  initOptions = (categorys) => {
+  initOptions = async (categorys) => {
     // 根据categorys数组生成options数组
     const options = categorys.map((c) => ({
       value: c._id,
       label: c.name,
       isLeaf: false
     }))
+    // 如果是一个二级分类商品的更新
+    const { isUpdate, product } = this
+    const { pCategoryId, categoryId } = product
+    if (isUpdate && pCategoryId !== '0') {
+      // 获取对应的二级分类列表
+      const subCategorys = await this.getCategorys(pCategoryId)
+      // 生成二级下拉列表的options
+      const childOptions = subCategorys.map((c) => ({
+        value: c._id,
+        label: c.name,
+        isLeaf: true
+      }))
+      // 找到当前商品对应的option对象
+      const targetOption = options.find(
+        (option) => option.value === pCategoryId
+      )
+      // 关联到对应的一级options
+      targetOption.children = childOptions
+    }
+
     // 更新状态
     this.setState({ options })
   }
@@ -72,14 +99,23 @@ export default class ProductAddUpdate extends Component {
       options: [...this.state.options]
     })
   }
+
   componentDidMount() {
     this.getCategorys()
   }
+
   handleSubmit = () => {
     // 表单对象
     const form = this.formRef.current
+    form
+      .validateFields()
+      .then((result) => {
+        console.log(result)
+      })
+      .catch()
   }
   render() {
+    const isupdate = this.isUpdate
     const title = (
       <span>
         <LinkButton>
@@ -88,13 +124,26 @@ export default class ProductAddUpdate extends Component {
             onClick={() => this.props.history.goBack()}
           />
         </LinkButton>
-        <span>添加商品</span>
+        <span>{isupdate ? '修改商品' : '添加商品'}</span>
       </span>
     )
     // 指定Item布局的配置对象
     const formItemLayout = {
       labelCol: { span: 2 },
       wrapperCol: { span: 8 }
+    }
+    const { product, isUpdate } = this
+    const { pCategoryId, categoryId } = product
+    const categoryIds = []
+    if (isUpdate) {
+      // 商品是一级分类商品
+      if (pCategoryId === '0') {
+        categoryIds.push(pCategoryId)
+      } else {
+        // 商品是二级分类商品
+        categoryIds.push(pCategoryId)
+        categoryIds.push(categoryId)
+      }
     }
     return (
       <Card title={title}>
@@ -104,33 +153,36 @@ export default class ProductAddUpdate extends Component {
           onFinish={this.handleSubmit}
         >
           <Item
-            label='商品名称：'
+            label='商品名称'
             rules={[{ required: true, message: '请输入商品名称' }]}
             name='name'
+            initialValue={product.name}
           >
             <Input placeholder='商品名称' />
           </Item>
           <Item
-            label='商品描述：'
+            label='商品描述'
             name='desc'
             rules={[{ required: true, message: '请输入商品描述' }]}
+            initialValue={product.desc}
           >
             <TextArea
-              placeholder='商品名称'
+              placeholder='商品描述'
               autoSize={{ minRows: 2, maxRows: 5 }}
             />
           </Item>
           <Item
-            label='商品价格：'
+            label='商品价格'
             name='price'
             rules={[
               { required: true, message: '请输入商品价格' },
               { validator: this.validatorPrice }
             ]}
+            initialValue={product.price}
           >
             <Input type='number' placeholder='商品价格' addonAfter='元' />
           </Item>
-          <Item label='商品分类'>
+          <Item label='商品分类' name='categoryIds' initialValue={categoryIds}>
             <Cascader
               options={this.state.options}
               loadData={this.loadData}
