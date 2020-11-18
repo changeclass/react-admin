@@ -1,9 +1,14 @@
 import React, { Component } from 'react'
-import { Form, Input, Button } from 'antd'
+import { Form, Input, Button, message } from 'antd'
 import { UserOutlined, LockOutlined } from '@ant-design/icons'
 
 import './login.less'
-import logo from './images/logo.png'
+import logo from '../../assets/images/logo.png'
+
+import { reqLogin } from '../../api/index.js'
+import memoryUtils from '../../utils/memoryUtils'
+import storageUtils from '../../utils/storageUtils'
+import { Redirect } from 'react-router-dom'
 /**
  * 登录的路由组件
  */
@@ -11,14 +16,29 @@ import logo from './images/logo.png'
 export default class Login extends Component {
   // 创建表单实例
   formRef = React.createRef()
+
   // 表单提交事件
-  handleSubmit = () => {
+  handleSubmit = async () => {
     // 此事件只有表单验证通过后才会触发
-    console.log(this.formRef.current)
+    // console.log(this.formRef.current)
     // 调用 getFieldValue 方法获取Form.Item.name 的值 （即username和password）
     const { getFieldValue } = this.formRef.current
+    // 解构出账号密码
     const { username, password } = getFieldValue()
-    console.log(username, password)
+    let res = await reqLogin(username, password)
+    if (res.status === 0) {
+      // 成功
+      message.success('登录成功')
+      // 跳转之前保存user
+      const user = res.data
+      memoryUtils.user = user // 存到内存中
+      storageUtils.saveUser(user) // 存到Local中
+      // 跳转到后台页面(不需要回退)
+      this.props.history.replace('/')
+    } else {
+      // 失败 提示错误信息
+      message.error(res.msg)
+    }
   }
   // 自定义验证-密码
   // AntD4中已经没有callback回调函数了，而是返回Promise对象
@@ -38,6 +58,11 @@ export default class Login extends Component {
     }
   }
   render() {
+    // 如果用户已经登录自动跳转管理界面
+    const user = memoryUtils.user
+    if (user && user._id) {
+      return <Redirect to='/' />
+    }
     return (
       <div className='login'>
         <header className='login-header'>
