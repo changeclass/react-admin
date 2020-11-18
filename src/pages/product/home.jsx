@@ -9,6 +9,69 @@ import { PAGE_SIZE } from '../../utils/constants'
 const Option = Select.Option
 // product的默认子路由组件
 export default class ProductHome extends Component {
+  // 初始化列
+  initColumns = () => {
+    this.columns = [
+      {
+        title: '商品名称',
+        dataIndex: 'name'
+      },
+      {
+        title: '商品描述',
+        dataIndex: 'desc'
+      },
+      {
+        title: '价格',
+        dataIndex: 'price',
+        render: (price) => '¥' + price // 当前指定了对应的属性, 传入的是对应的属性值
+      },
+      {
+        width: 100,
+        title: '状态',
+        // dataIndex: 'status',
+        render: (product) => {
+          const { status, _id } = product
+          const newStatus = status === 1 ? 2 : 1
+          return (
+            <span>
+              <Button
+                type='primary'
+                onClick={() => this.updateStatus(_id, newStatus)}
+              >
+                {status === 1 ? '下架' : '上架'}
+              </Button>
+              <span>{status === 1 ? '在售' : '已下架'}</span>
+            </span>
+          )
+        }
+      },
+      {
+        width: 100,
+        title: '操作',
+        render: (product) => {
+          return (
+            <span>
+              {/*将product对象使用state传递给目标路由组件*/}
+              <LinkButton
+                onClick={() =>
+                  this.props.history.push('/product/detail', { product })
+                }
+              >
+                详情
+              </LinkButton>
+              <LinkButton
+                onClick={() =>
+                  this.props.history.push('/product/addupdate', product)
+                }
+              >
+                修改
+              </LinkButton>
+            </span>
+          )
+        }
+      }
+    ]
+  }
   state = {
     total: 0, // 商品的总数量
     products: [], // 商品的数组
@@ -22,7 +85,7 @@ export default class ProductHome extends Component {
     let result
     if (searchName) {
       // 搜索
-      result = await reqProducts({
+      result = await reqSearchProducts({
         pageNum,
         pageSize: PAGE_SIZE,
         searchName,
@@ -30,7 +93,7 @@ export default class ProductHome extends Component {
       })
     } else {
       // 一般分页
-      result = await reqProducts(pageNum, 3)
+      result = await reqProducts(pageNum, PAGE_SIZE)
     }
     this.setState({ loading: false })
     if (result.status !== 0) return message.error('错误')
@@ -42,6 +105,7 @@ export default class ProductHome extends Component {
   }
   componentDidMount() {
     this.getProducts(1)
+    this.initColumns()
   }
   render() {
     // 取出状态数据
