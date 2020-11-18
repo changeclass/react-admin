@@ -112,6 +112,10 @@ export default class Category extends Component {
   }
   // 显示添加的对话框
   showAdd = () => {
+    console.log(this.form, 1)
+    if (this.form) {
+      this.form.resetFields()
+    }
     this.setState({
       showStatus: 1
     })
@@ -122,7 +126,7 @@ export default class Category extends Component {
       .validateFields()
       .then(async (result) => {
         const { parentId, categoryName } = this.form.getFieldsValue()
-        console.log(this.form.getFieldsValue())
+
         this.form.resetFields()
         const { status } = await reqAddCategory(categoryName, parentId)
         if (status !== 0) return message.error('错误了！')

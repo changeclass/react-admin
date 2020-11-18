@@ -15,9 +15,9 @@ export default class UpdateForm extends Component {
     // this.props.categoryName = this.formRef.current.getFieldValue('name')
     // console.log(this.formRef.current)
     // this.formRef.current.resetFields()
+
     this.props.setForm(this.formRef.current)
   }
-
   render() {
     const { categoryName } = this.props
     return (
