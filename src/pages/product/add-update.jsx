@@ -12,6 +12,9 @@ const { TextArea } = Input
 // Product的添加和更新的子路由组件
 export default class ProductAddUpdate extends Component {
   formRef = React.createRef()
+  state = {
+    options: []
+  }
   // 价格的验证规则
   validatorPrice = (item, value) => {
     if (value >= 0 && value <= 999999999) {
@@ -19,6 +22,54 @@ export default class ProductAddUpdate extends Component {
     } else {
       return Promise.reject('？？？')
     }
+  }
+  initOptions = (categorys) => {
+    // 根据categorys数组生成options数组
+    const options = categorys.map((c) => ({
+      value: c._id,
+      label: c.name,
+      isLeaf: false
+    }))
+    // 更新状态
+    this.setState({ options })
+  }
+  // 获取一级/二级分类列表
+  getCategorys = async (parentId) => {
+    parentId = parentId || '0'
+    const result = await reqCategorys(parentId)
+    if (result.status !== 0) return message.error('分类获取失败')
+    const categorys = result.data
+    this.initOptions(categorys)
+  }
+  loadData = (selectedOptions) => {
+    // 的到选择的option对象
+    const targetOption = selectedOptions[selectedOptions.length - 1]
+    // loading效果
+    targetOption.loading = true
+
+    // load options lazily
+    setTimeout(() => {
+      targetOption.loading = false
+      // 某一项的下一级列表
+      targetOption.children = [
+        {
+          label: `${targetOption.label} Dynamic 1`,
+          value: 'dynamic1',
+          isLeaf: true
+        },
+        {
+          label: `${targetOption.label} Dynamic 2`,
+          value: 'dynamic2',
+          isLeaf: true
+        }
+      ]
+      this.setState({
+        options: [...this.state.options]
+      })
+    }, 1000)
+  }
+  componentDidMount() {
+    this.getCategorys()
   }
   handleSubmit = () => {
     // 表单对象
@@ -76,7 +127,12 @@ export default class ProductAddUpdate extends Component {
             <Input type='number' placeholder='商品价格' addonAfter='元' />
           </Item>
           <Item label='商品分类'>
-            <Input placeholder='商品分类' addonAfter='元' />
+            <Cascader
+              options={this.state.options}
+              loadData={this.loadData}
+              onChange={this.onChange}
+              changeOnSelect
+            />
           </Item>
           <Item label='商品图片' name='imgs'>
             <Input placeholder='商品价格' addonAfter='元' />
