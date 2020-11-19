@@ -127,7 +127,7 @@ export default class Category extends Component {
       .then(async (result) => {
         const { parentId, categoryName } = this.form.getFieldsValue()
 
-        this.form.resetFields()
+        // this.form.resetFields()
         const { status } = await reqAddCategory(categoryName, parentId)
         if (status !== 0) return message.error('错误了！')
         message.success('添加成功！')
@@ -135,7 +135,7 @@ export default class Category extends Component {
         this.getCategories()
       })
       .catch((err) => {
-        message.error('错误了！')
+        message.error('请填写哦！')
       })
   }
   /** 更新相关 */
