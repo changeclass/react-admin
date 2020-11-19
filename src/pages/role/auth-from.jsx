@@ -8,7 +8,8 @@ export default class AuthForm extends Component {
     role: PropType.object
   }
   state = {
-    checkedKeys: []
+    checkedKeys: [],
+    edit: false
   }
   formRef = React.createRef()
   getTreeNodes = (menuList) => {
@@ -22,10 +23,41 @@ export default class AuthForm extends Component {
     }
     this.treeNodes = this.getTreeNodes(menuList)
   }
-  componentDidMount() {
-    this.treeNodes = this.getTreeNodes(menuList)
-    // console.log(this.treeNodes)
+
+  UNSAFE_componentWillReceiveProps(nextProps) {
+    const menus = nextProps.role.menus
+    this.setState({
+      checkedKeys: menus
+    })
   }
+  // static getDerivedStateFromProps(nextProps, prevState) {
+  //   console.log(prevState)
+  //   //该方法内禁止访问this
+  //   if (nextProps.role.menus !== prevState.checkedKeys) {
+  //     //通过对比nextProps和prevState，返回一个用于更新状态的对象
+  //     return {
+  //       checkedKeys: nextProps.role.menus
+  //     }
+  //   }
+  //   //不需要更新状态，返回null
+  //   return null
+  // }
+
+  // static getDerivedStateFromProps(nextProps, prevState) {
+  //   console.log('nextProps', nextProps.role.menus)
+  //   console.log('prevState', prevState.checkedKeys)
+  //   if (nextProps.role.menus !== prevState.checkedKeys) {
+  //     //通过对比nextProps和prevState，返回一个用于更新状态的对象
+  //     // nextProps.role.menus = prevState.checkedKeys
+  //     return {
+  //       checkedKeys: nextProps.role.menus
+  //     }
+  //   }
+  // }
+  // shouldComponentUpdate(nextProps, prevState) {
+  //   console.log(nextProps, prevState)
+  //   return nextProps.role.menus !== prevState.checkedKeys
+  // }
   onCheck = (checkedKeys) => {
     this.setState({
       checkedKeys
@@ -35,8 +67,6 @@ export default class AuthForm extends Component {
   render() {
     const { role } = this.props
     const { checkedKeys } = this.state
-
-    console.log(this.treeNodes)
     return (
       <div>
         <Input addonBefore='角色名称' disabled value={role.name} />

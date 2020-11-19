@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { Card, Button, Table, Modal, message } from 'antd'
 import { formateDate } from '../../utils/dateUtils'
 import { PAGE_SIZE } from '../../utils/constants'
+import memoryUtiles from '../../utils/memoryUtils'
 import { reqRoles, reqAddRole, reqUpdateRole } from '../../api'
 import AddForm from './add-form'
 import AuthForm from './auth-from'
@@ -86,6 +87,8 @@ export default class Role extends Component {
     // 得到最新的menus
     const menus = this.auth.current.getMenus()
     role.menus = menus
+    role.auth_name = memoryUtiles.user.username
+    role.auth_time = Date.now()
     const result = await reqUpdateRole(role)
     if (result.status !== 0) return message.error('错误了！')
     message.success('更新完成了！')
