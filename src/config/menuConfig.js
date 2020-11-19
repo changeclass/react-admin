@@ -31,6 +31,7 @@ const menuList = [
     key: '/role',
     icon: 'icon-jiaose',
   },
+
   {
     title: '图形图表',
     key: '/charts',
@@ -53,5 +54,10 @@ const menuList = [
       },
     ]
   },
+  {
+    title: '订单管理',
+    key: '/order',
+    icon: 'icon-jiaose',
+  }
 ]
 export default menuList

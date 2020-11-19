@@ -55,7 +55,7 @@ export default class Role extends Component {
     return {
       onClick: (event) => {
         // 点击行
-        console.log('row onClick()', role)
+        // console.log('row onClick()', role)
         // alert('点击行')
         this.setState({
           role
@@ -81,7 +81,19 @@ export default class Role extends Component {
       })
   }
   // 更新角色的回调函数
-  updateRole = () => {}
+  updateRole = async () => {
+    const role = this.state.role
+    // 得到最新的menus
+    const menus = this.auth.current.getMenus()
+    role.menus = menus
+    const result = await reqUpdateRole(role)
+    if (result.status !== 0) return message.error('错误了！')
+    message.success('更新完成了！')
+    this.setState({
+      isShowAuth: false
+    })
+    this.getRoles()
+  }
   componentDidMount() {
     this.initColumn()
     this.getRoles()
