@@ -10,7 +10,7 @@ export default class RichTextEditor extends Component {
   constructor(props) {
     super(props)
     const html = this.props.detail
-    if (html !== '') {
+    if (html) {
       const contentBlock = htmlToDraft(html)
       const contentState = ContentState.createFromBlockArray(
         contentBlock.contentBlocks
