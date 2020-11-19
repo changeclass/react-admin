@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Form, Select, Input, Button } from 'antd'
+import { Form, Select, Input } from 'antd'
 import PropTypes from 'prop-types'
 const Option = Select.Option
 export default class AddForm extends Component {
@@ -14,7 +14,6 @@ export default class AddForm extends Component {
   }
 
   componentDidMount() {
-    console.log(this.formRef.current)
     this.props.setForm(this.formRef.current)
   }
   render() {

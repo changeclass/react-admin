@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { Card, Form, Input, Cascader, Button, message } from 'antd'
 import { ArrowLeftOutlined } from '@ant-design/icons'
 import PicturesWall from './pictures-wall'
-// import RichTextEditor from './rich-text-editor'
+import RichTextEditor from './rich-text-editor'
 import LinkButton from '../../components/link-button'
 import { reqCategorys, reqAddOrUpdateProduct } from '../../api'
 
@@ -17,6 +17,7 @@ export default class ProductAddUpdate extends Component {
     const product = this.props.location.state
     // 创建用于保存ref表示的容器
     this.pw = React.createRef()
+    this.edit = React.createRef()
     // 保存是否更新的表示
     this.isUpdate = !!product
     this.product = product || {}
@@ -115,6 +116,8 @@ export default class ProductAddUpdate extends Component {
       .then((result) => {
         // 获取图片列表
         result.imgs = this.pw.current.getImgs()
+        // 获取商品描述
+        result.desc = this.edit.current.getDetail()
         console.log(result)
       })
       .catch()
@@ -138,7 +141,7 @@ export default class ProductAddUpdate extends Component {
       wrapperCol: { span: 8 }
     }
     const { product, isUpdate } = this
-    const { pCategoryId, categoryId, imgs } = product
+    const { pCategoryId, categoryId, imgs, desc } = product
     const categoryIds = []
     if (isUpdate) {
       // 商品是一级分类商品
@@ -187,7 +190,12 @@ export default class ProductAddUpdate extends Component {
           >
             <Input type='number' placeholder='商品价格' addonAfter='元' />
           </Item>
-          <Item label='商品分类' name='categoryIds' initialValue={categoryIds}>
+          <Item
+            label='商品分类'
+            name='categoryIds'
+            initialValue={categoryIds}
+            rules={[{ required: true, message: '请选择分类' }]}
+          >
             <Cascader
               options={this.state.options}
               loadData={this.loadData}
@@ -198,8 +206,13 @@ export default class ProductAddUpdate extends Component {
           <Item label='商品图片' name='imgs'>
             <PicturesWall ref={this.pw} imgs={imgs} />
           </Item>
-          <Item label='商品详情' name='detail'>
-            <Input placeholder='商品价格' addonAfter='元' />
+          <Item
+            label='商品详情'
+            name='detail'
+            labelCol={{ span: 2 }}
+            wrapperCol={{ span: 20 }}
+          >
+            <RichTextEditor ref={this.edit} detail={desc} />
           </Item>
           <Item>
             <Button type='primary' htmlType='submit'>
