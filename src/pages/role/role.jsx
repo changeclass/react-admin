@@ -90,9 +90,9 @@ export default class Role extends Component {
     if (result.status !== 0) return message.error('错误了！')
     message.success('更新完成了！')
     this.setState({
-      isShowAuth: false
+      isShowAuth: false,
+      roles: [...this.state.roles]
     })
-    this.getRoles()
   }
   componentDidMount() {
     this.initColumn()
