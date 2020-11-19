@@ -113,11 +113,40 @@ export default class ProductAddUpdate extends Component {
     const form = this.formRef.current
     form
       .validateFields()
-      .then((result) => {
+      .then(async (result) => {
+        // 1. 收集数据
+        const { name, desc, price, categoryIds } = result
+        let pCategoryId, categoryId
+        if (categoryIds.length === 1) {
+          pCategoryId = 0
+          categoryId = categoryIds[0]
+        } else {
+          pCategoryId = categoryIds[0]
+          categoryId = categoryIds[1]
+        }
         // 获取图片列表
-        result.imgs = this.pw.current.getImgs()
+        let imgs = this.pw.current.getImgs()
         // 获取商品描述
-        result.desc = this.edit.current.getDetail()
+        let detail = this.edit.current.getDetail()
+        const product = {
+          name,
+          desc,
+          price,
+          imgs,
+          detail,
+          pCategoryId,
+          categoryId
+        }
+        // 如果是更新 需要添加_id
+        if (this.isUpdate) {
+          product._id = this.product._id
+        }
+        // 添加或者更新
+        const res = await reqAddOrUpdateProduct(product)
+        if (res.status !== 0) return message.error('更新失败')
+        message.success(`${this.isUpdate ? '更新' : '添加'}商品成功`)
+        this.props.history.goBack()
+        // 根据结果提示
         console.log(result)
       })
       .catch()
@@ -141,7 +170,8 @@ export default class ProductAddUpdate extends Component {
       wrapperCol: { span: 8 }
     }
     const { product, isUpdate } = this
-    const { pCategoryId, categoryId, imgs, desc } = product
+    const { pCategoryId, categoryId, imgs, detail } = product
+
     const categoryIds = []
     if (isUpdate) {
       // 商品是一级分类商品
@@ -212,7 +242,7 @@ export default class ProductAddUpdate extends Component {
             labelCol={{ span: 2 }}
             wrapperCol={{ span: 20 }}
           >
-            <RichTextEditor ref={this.edit} detail={desc} />
+            <RichTextEditor ref={this.edit} detail={detail} />
           </Item>
           <Item>
             <Button type='primary' htmlType='submit'>
