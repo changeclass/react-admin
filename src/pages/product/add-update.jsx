@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { Card, Form, Input, Cascader, Button, message } from 'antd'
 import { ArrowLeftOutlined } from '@ant-design/icons'
-// import PicturesWall from './pictures-wall'
+import PicturesWall from './pictures-wall'
 // import RichTextEditor from './rich-text-editor'
 import LinkButton from '../../components/link-button'
 import { reqCategorys, reqAddOrUpdateProduct } from '../../api'
@@ -15,6 +15,8 @@ export default class ProductAddUpdate extends Component {
   constructor(props) {
     super(props)
     const product = this.props.location.state
+    // 创建用于保存ref表示的容器
+    this.pw = React.createRef()
     // 保存是否更新的表示
     this.isUpdate = !!product
     this.product = product || {}
@@ -22,6 +24,7 @@ export default class ProductAddUpdate extends Component {
   state = {
     options: []
   }
+
   // 价格的验证规则
   validatorPrice = (item, value) => {
     if (value >= 0 && value <= 999999999) {
@@ -103,13 +106,15 @@ export default class ProductAddUpdate extends Component {
   componentDidMount() {
     this.getCategorys()
   }
-
+  // 表单提交事件
   handleSubmit = () => {
     // 表单对象
     const form = this.formRef.current
     form
       .validateFields()
       .then((result) => {
+        // 获取图片列表
+        result.imgs = this.pw.current.getImgs()
         console.log(result)
       })
       .catch()
@@ -133,7 +138,7 @@ export default class ProductAddUpdate extends Component {
       wrapperCol: { span: 8 }
     }
     const { product, isUpdate } = this
-    const { pCategoryId, categoryId } = product
+    const { pCategoryId, categoryId, imgs } = product
     const categoryIds = []
     if (isUpdate) {
       // 商品是一级分类商品
@@ -191,7 +196,7 @@ export default class ProductAddUpdate extends Component {
             />
           </Item>
           <Item label='商品图片' name='imgs'>
-            <Input placeholder='商品价格' addonAfter='元' />
+            <PicturesWall ref={this.pw} imgs={imgs} />
           </Item>
           <Item label='商品详情' name='detail'>
             <Input placeholder='商品价格' addonAfter='元' />
