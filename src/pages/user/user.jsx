@@ -1,8 +1,14 @@
 import React, { Component } from 'react'
 import { Card, Button, Table, Modal, message } from 'antd'
+import { ExclamationCircleOutlined } from '@ant-design/icons'
 import { formateDate } from '../../utils/dateUtils'
 import LinkButton from '../../components/link-button/index'
-import { reqDeleteUser, reqUsers, reqAddOrUpdateUser } from '../../api/index'
+import {
+  reqDeleteUser,
+  reqUsers,
+  reqAddOrUpdateUser,
+  reqDeleteImg
+} from '../../api/index'
 import UserForm from './user-form'
 // 用户路由
 export default class User extends Component {
@@ -72,13 +78,28 @@ export default class User extends Component {
   showAdd = () => {
     this.setState({ isShow: true })
   }
-  columns = () => {}
-  componentWillMount() {
-    this.initColumns()
+  showUpdate = () => {
+    this.setState({ isShow: true })
   }
-
+  deleteUser = (user) => {
+    Modal.confirm({
+      title: `确认删除${user.username}么？`,
+      icon: <ExclamationCircleOutlined />,
+      onOk: async () => {
+        const result = await reqDeleteUser(user._id)
+        if (result.status !== 0) return message.error('删除失败！')
+        message.success('删除成功！')
+        this.getUsers()
+      }
+    })
+  }
+  addOrUpdateUser() {
+    // console.log(this.form)
+    console.log(12)
+  }
   componentDidMount() {
     this.getUsers()
+    this.initColumns()
   }
   render() {
     const { users, roles, isShow } = this.state
@@ -110,7 +131,7 @@ export default class User extends Component {
           }}
         >
           <UserForm
-            // setForm={(form) => (this.form = form)}
+            setForm={(form) => (this.form = form)}
             roles={roles}
             user={user}
           />
