@@ -3,6 +3,7 @@ import { Card, Button, Table, Modal, message } from 'antd'
 import { formateDate } from '../../utils/dateUtils'
 import { PAGE_SIZE } from '../../utils/constants'
 import memoryUtiles from '../../utils/memoryUtils'
+import storageUtils from '../../utils/storageUtils'
 import { reqRoles, reqAddRole, reqUpdateRole } from '../../api'
 import AddForm from './add-form'
 import AuthForm from './auth-from'
@@ -91,11 +92,19 @@ export default class Role extends Component {
     role.auth_time = Date.now()
     const result = await reqUpdateRole(role)
     if (result.status !== 0) return message.error('错误了！')
-    message.success('更新完成了！')
-    this.setState({
-      isShowAuth: false,
-      roles: [...this.state.roles]
-    })
+
+    if (role._id === memoryUtiles.user.role_id) {
+      memoryUtiles.user = {}
+      storageUtils.removeUser()
+      message.success('当前角色权限修改了，请重新登录')
+      this.props.history.replace('/login')
+    } else {
+      message.success('权限更新成功！')
+      this.setState({
+        isShowAuth: false,
+        roles: [...this.state.roles]
+      })
+    }
   }
   componentDidMount() {
     this.initColumn()

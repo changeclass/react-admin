@@ -7,7 +7,7 @@ import { Menu } from 'antd'
 import './index.less'
 import logo from '../../assets/images/logo.png'
 import menuList from '../../config/menuConfig.js'
-
+import memoryUtils from '../../utils/memoryUtils'
 // 子集菜单
 const { SubMenu } = Menu
 // 阿里iconfont
@@ -20,6 +20,20 @@ class LeftNav extends Component {
   constructor(props) {
     super(props)
     this.menuNodes = this.getMenuNodes(menuList)
+  }
+  // 判断当前登录用户是否有权限
+  hasAuth = (item) => {
+    const { key, isPublic } = item
+    const menus = memoryUtils.user.role.menus
+    const username = memoryUtils.user.username
+    console.log(memoryUtils)
+    if (username === 'admin' || isPublic || menus.indexOf(key) !== -1) {
+      return true
+    } else if (item.children) {
+      return !!item.children.find((child) => menus.indexOf(child.key) !== -1)
+    } else {
+      return false
+    }
   }
   // 根据menu的数据数组生成对应的标签数组
   getMenuNodes_map = (menuList) => {
@@ -48,32 +62,35 @@ class LeftNav extends Component {
   getMenuNodes = (menuList) => {
     const path = this.props.location.pathname
     return menuList.reduce((pre, item) => {
-      // 向pre中添加
-      if (!item.children) {
-        pre.push(
-          <Menu.Item key={item.key}>
-            <IconFont type={item.icon} />
-            <Link to={item.key}>{item.title}</Link>
-          </Menu.Item>
-        )
-      } else {
-        const cItem = item.children.find(
-          (cItem) => path.indexOf(cItem.key) === 0
-        )
-        // 如果存在
-        if (cItem) this.openKey = item.key
+      if (this.hasAuth(item)) {
+        if (!item.children) {
+          // 向pre中添加
+          pre.push(
+            <Menu.Item key={item.key}>
+              <IconFont type={item.icon} />
+              <Link to={item.key}>{item.title}</Link>
+            </Menu.Item>
+          )
+        } else {
+          const cItem = item.children.find(
+            (cItem) => path.indexOf(cItem.key) === 0
+          )
+          // 如果存在
+          if (cItem) this.openKey = item.key
 
-        pre.push(
-          <SubMenu
-            key={item.key}
-            title={item.title}
-            icon={<IconFont type={item.icon} />}
-          >
-            {/* 递归调用 */}
-            {this.getMenuNodes(item.children)}
-          </SubMenu>
-        )
+          pre.push(
+            <SubMenu
+              key={item.key}
+              title={item.title}
+              icon={<IconFont type={item.icon} />}
+            >
+              {/* 递归调用 */}
+              {this.getMenuNodes(item.children)}
+            </SubMenu>
+          )
+        }
       }
+
       return pre
     }, [])
   }
