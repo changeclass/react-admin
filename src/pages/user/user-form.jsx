@@ -13,6 +13,14 @@ export default class userForm extends Component {
   formRef = React.createRef()
   componentDidMount() {
     this.props.setForm(this.formRef.current)
+    this.formRef.current.setFieldsValue({
+      ...this.props.user
+    })
+  }
+  componentDidUpdate() {
+    this.formRef.current.setFieldsValue({
+      ...this.props.user
+    })
   }
   render() {
     const formItemLayout = {
@@ -20,6 +28,7 @@ export default class userForm extends Component {
       wrapperCol: { span: 15 } // 右侧包裹的宽度
     }
     const { roles, user } = this.props
+
     return (
       <Form ref={this.formRef}>
         <Form.Item
@@ -31,16 +40,17 @@ export default class userForm extends Component {
         >
           <Input placeholder='请输入用户名' />
         </Form.Item>
-
-        <Form.Item
-          initialValue=''
-          rules={[{ required: true, message: '请输入密码！' }]}
-          name='password'
-          label='密码'
-          {...formItemLayout}
-        >
-          <Input placeholder='请输入密码' type='password' />
-        </Form.Item>
+        {user._id ? null : (
+          <Form.Item
+            initialValue=''
+            rules={[{ required: true, message: '请输入密码！' }]}
+            name='password'
+            label='密码'
+            {...formItemLayout}
+          >
+            <Input placeholder='请输入密码' type='password' />
+          </Form.Item>
+        )}
 
         <Form.Item
           initialValue=''

@@ -78,7 +78,8 @@ export default class User extends Component {
   showAdd = () => {
     this.setState({ isShow: true })
   }
-  showUpdate = () => {
+  showUpdate = (user) => {
+    this.user = user
     this.setState({ isShow: true })
   }
   deleteUser = (user) => {
@@ -93,9 +94,21 @@ export default class User extends Component {
       }
     })
   }
-  addOrUpdateUser() {
-    // console.log(this.form)
-    console.log(12)
+  addOrUpdateUser = () => {
+    this.form
+      .validateFields()
+      .then(async (user) => {
+        if (this.user) {
+          user._id = this.user._id
+        }
+        const result = await reqAddOrUpdateUser(user)
+        if (result.status !== 0) return message.error('失败')
+        message.success('成功')
+        this.form.resetFields()
+        this.getUsers()
+        this.setState({ isShow: false })
+      })
+      .catch((err) => {})
   }
   componentDidMount() {
     this.getUsers()
