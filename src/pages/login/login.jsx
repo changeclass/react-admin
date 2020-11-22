@@ -1,19 +1,24 @@
 import React, { Component } from 'react'
+import { connect } from 'react-redux'
+import { Redirect } from 'react-router-dom'
 import { Form, Input, Button, message } from 'antd'
 import { UserOutlined, LockOutlined } from '@ant-design/icons'
 
 import './login.less'
 import logo from '../../assets/images/logo.png'
 
+/*
 import { reqLogin } from '../../api/index.js'
 import memoryUtils from '../../utils/memoryUtils'
 import storageUtils from '../../utils/storageUtils'
-import { Redirect } from 'react-router-dom'
+*/
+import { login } from '../../redux/actions'
+
 /**
  * 登录的路由组件
  */
 
-export default class Login extends Component {
+class Login extends Component {
   // 创建表单实例
   formRef = React.createRef()
 
@@ -25,6 +30,10 @@ export default class Login extends Component {
     const { getFieldValue } = this.formRef.current
     // 解构出账号密码
     const { username, password } = getFieldValue()
+    // 调用分发异步action的函数
+    // 发送异步请求
+    this.props.login(username, password)
+    /*
     let res = await reqLogin(username, password)
     if (res.status === 0) {
       // 成功
@@ -35,16 +44,15 @@ export default class Login extends Component {
       storageUtils.saveUser(user) // 存到Local中
       // 跳转到后台页面(不需要回退)
       this.props.history.replace('/home')
-    } else {
+    }else {
       // 失败 提示错误信息
       message.error(res.msg)
-    }
+    }*/
   }
   // 自定义验证-密码
   // AntD4中已经没有callback回调函数了，而是返回Promise对象
   validatePwd = (rule, value) => {
     // value 表示当前输入框传入的值
-    console.log(rule, value)
     if (!value) {
       return Promise.reject('密码必须输入')
     } else if (value.length < 5) {
@@ -59,10 +67,14 @@ export default class Login extends Component {
   }
   render() {
     // 如果用户已经登录自动跳转管理界面
-    const user = memoryUtils.user
+    // const user = memoryUtils.user
+
+    const user = this.props.user
     if (user && user._id) {
-      return <Redirect to='/' />
+      return <Redirect to='/home' />
     }
+    const errorMsg = this.props.user.errorMsg
+
     return (
       <div className='login'>
         <header className='login-header'>
@@ -70,6 +82,9 @@ export default class Login extends Component {
           <h1>React项目：谷粒商城</h1>
         </header>
         <section className='login-content'>
+          <div className={errorMsg ? 'error-msg show' : 'error-msg'}>
+            {errorMsg}
+          </div>
           <h2>用户登录</h2>
           <Form
             name='normal_login'
@@ -132,3 +147,4 @@ export default class Login extends Component {
     )
   }
 }
+export default connect((state) => ({ user: state.user }), { login })(Login)
