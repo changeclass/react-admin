@@ -34,7 +34,7 @@ export default class Login extends Component {
       memoryUtils.user = user // 存到内存中
       storageUtils.saveUser(user) // 存到Local中
       // 跳转到后台页面(不需要回退)
-      this.props.history.replace('/')
+      this.props.history.replace('/home')
     } else {
       // 失败 提示错误信息
       message.error(res.msg)

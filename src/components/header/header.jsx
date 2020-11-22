@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import LinkButton from '../link-button'
 import { formateDate } from '../../utils/dateUtils'
@@ -83,7 +84,8 @@ class Header extends Component {
   render() {
     const { currentTime, dayPictureUrl, weather } = this.state
     const username = memoryUtils.user.username
-    const title = this.getTitle()
+    // const title = this.getTitle()
+    const title = this.props.headTitle
     return (
       <div className='header'>
         <div className='header-top'>
@@ -102,4 +104,7 @@ class Header extends Component {
     )
   }
 }
-export default withRouter(Header)
+export default connect(
+  (state) => ({ headTitle: state.headTitle }),
+  {}
+)(withRouter(Header))

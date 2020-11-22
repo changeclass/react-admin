@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
 import { createFromIconfontCN } from '@ant-design/icons'
 import { withRouter } from 'react-router-dom'
@@ -8,6 +9,7 @@ import './index.less'
 import logo from '../../assets/images/logo.png'
 import menuList from '../../config/menuConfig.js'
 import memoryUtils from '../../utils/memoryUtils'
+import { setHeadTitle } from '../../redux/actions'
 // 子集菜单
 const { SubMenu } = Menu
 // 阿里iconfont
@@ -64,11 +66,20 @@ class LeftNav extends Component {
     return menuList.reduce((pre, item) => {
       if (this.hasAuth(item)) {
         if (!item.children) {
+          // 当前要显示的item
+          if (item.key === path || path.indexOf(item.key) === 0) {
+            this.props.setHeadTitle(item.title)
+          }
           // 向pre中添加
           pre.push(
             <Menu.Item key={item.key}>
               <IconFont type={item.icon} />
-              <Link to={item.key}>{item.title}</Link>
+              <Link
+                to={item.key}
+                onClick={() => this.props.setHeadTitle(item.title)}
+              >
+                {item.title}
+              </Link>
             </Menu.Item>
           )
         } else {
@@ -94,7 +105,6 @@ class LeftNav extends Component {
       return pre
     }, [])
   }
-  com
   render() {
     // const menuNodes = this.getMenuNodes(menuList)
     let path = this.props.location.pathname
@@ -122,4 +132,4 @@ class LeftNav extends Component {
   }
 }
 // 通过使用withRouter包装获取路由
-export default withRouter(LeftNav)
+export default connect((state) => ({}), { setHeadTitle })(withRouter(LeftNav))
