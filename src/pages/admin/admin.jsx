@@ -18,6 +18,11 @@ import User from '../user/user'
 import Bar from '../charts/bar' // 柱状图
 import Line from '../charts/line' // 折线图
 import Pie from '../charts/pie' // 饼状图
+// 订单管理
+import Order from '../order/order'
+// 404页面
+import NotFound from '../not-found/not-found'
+
 import { connect } from 'react-redux'
 
 const { Footer, Sider, Content } = Layout
@@ -39,6 +44,7 @@ class Admin extends Component {
             <Header> Hello {user.username}</Header>
             <Content style={{ margin: 20, backgroundColor: '#fff' }}>
               <Switch>
+                <Redirect exact from='/' to='/home'></Redirect>
                 <Route path='/home' component={Home} />
                 <Route path='/category' component={Category} />
                 <Route path='/product' component={Product} />
@@ -47,7 +53,8 @@ class Admin extends Component {
                 <Route path='/charts/bar' component={Bar} />
                 <Route path='/charts/line' component={Line} />
                 <Route path='/charts/pie' component={Pie} />
-                <Redirect to='/home'></Redirect>
+                <Route path='/order' component={Order} />
+                <Route component={NotFound} />
               </Switch>
             </Content>
             <Footer style={{ textAlign: 'center', color: '#ccc' }}>
