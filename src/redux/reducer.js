@@ -2,7 +2,7 @@
  * 用来根据老的state和指定的action生成并返回新的state的函数
  */
 import storageUtils from '../utils/storageUtils'
-import { SET_HEAD_TITLE, RECEIVE_USER, SHOW_ERROR_MSG } from './action-type'
+import { SET_HEAD_TITLE, RECEIVE_USER, SHOW_ERROR_MSG, RESET_USER } from './action-type'
 import { combineReducers } from 'redux'
 
 const initHeadTitle = '首页'
@@ -25,6 +25,8 @@ function user (state = initUser, action) {
     case SHOW_ERROR_MSG:
       const errorMsg = action.errorMsg
       return { ...state, errorMsg }
+    case RESET_USER:
+      return {}
     default:
       return state
   }

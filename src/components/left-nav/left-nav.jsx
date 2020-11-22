@@ -8,7 +8,7 @@ import { Menu } from 'antd'
 import './index.less'
 import logo from '../../assets/images/logo.png'
 import menuList from '../../config/menuConfig.js'
-import memoryUtils from '../../utils/memoryUtils'
+// import memoryUtils from '../../utils/memoryUtils'
 import { setHeadTitle } from '../../redux/actions'
 // 子集菜单
 const { SubMenu } = Menu
@@ -26,9 +26,8 @@ class LeftNav extends Component {
   // 判断当前登录用户是否有权限
   hasAuth = (item) => {
     const { key, isPublic } = item
-    const menus = memoryUtils.user.role.menus
-    const username = memoryUtils.user.username
-    console.log(memoryUtils)
+    const menus = this.props.user.role.menus
+    const username = this.props.user.username
     if (username === 'admin' || isPublic || menus.indexOf(key) !== -1) {
       return true
     } else if (item.children) {
@@ -132,4 +131,6 @@ class LeftNav extends Component {
   }
 }
 // 通过使用withRouter包装获取路由
-export default connect((state) => ({}), { setHeadTitle })(withRouter(LeftNav))
+export default connect((state) => ({ user: state.user }), { setHeadTitle })(
+  withRouter(LeftNav)
+)

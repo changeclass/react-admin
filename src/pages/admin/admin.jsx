@@ -5,7 +5,7 @@ import React, { Component } from 'react'
 import { Redirect, Route, Switch } from 'react-router-dom'
 import { Layout } from 'antd'
 
-import memoryUtils from '../../utils/memoryUtils'
+// import memoryUtils from '../../utils/memoryUtils'
 import LeftNav from '../../components/left-nav/left-nav'
 import Header from '../../components/header/header'
 // 路由组件
@@ -18,12 +18,13 @@ import User from '../user/user'
 import Bar from '../charts/bar' // 柱状图
 import Line from '../charts/line' // 折线图
 import Pie from '../charts/pie' // 饼状图
+import { connect } from 'react-redux'
 
 const { Footer, Sider, Content } = Layout
 
-export default class Admin extends Component {
+class Admin extends Component {
   render() {
-    const user = memoryUtils.user
+    const user = this.props.user
     // 判断是否存在user
     if (!user || !user._id) {
       // 没有登录，自动跳转
@@ -58,3 +59,4 @@ export default class Admin extends Component {
     }
   }
 }
+export default connect((state) => ({ user: state.user }), {})(Admin)

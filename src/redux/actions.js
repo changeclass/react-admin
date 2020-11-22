@@ -3,7 +3,7 @@
  * 同步：对象{}
  * 异步：thunk
  */
-import { SET_HEAD_TITLE, RECEIVE_USER, SHOW_ERROR_MSG } from './action-type'
+import { SET_HEAD_TITLE, RECEIVE_USER, SHOW_ERROR_MSG, RESET_USER } from './action-type'
 import { reqLogin } from '../api'
 import storageUtils from '../utils/storageUtils'
 //  设置头部标题的同步action
@@ -34,4 +34,11 @@ export const login = (username, password) => {
       dispath(showErrorMsg(msg))
     }
   }
+}
+
+// 退出登录同步
+export const logout = () => {
+  // 删除local中的user
+  storageUtils.removeUser()
+  return { type: RESET_USER }
 }
