@@ -5,4 +5,5 @@
 export default {
   // 当前登录的user
   user: {},
+  product: {} // 指定的商品对象
 }

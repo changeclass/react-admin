@@ -5,6 +5,7 @@ import PicturesWall from './pictures-wall'
 import RichTextEditor from './rich-text-editor'
 import LinkButton from '../../components/link-button'
 import { reqCategorys, reqAddOrUpdateProduct } from '../../api'
+import memoryUtils from '../../utils/memoryUtils'
 
 const { Item } = Form
 const { TextArea } = Input
@@ -14,12 +15,12 @@ export default class ProductAddUpdate extends Component {
   formRef = React.createRef()
   constructor(props) {
     super(props)
-    const product = this.props.location.state
+    const product = memoryUtils.product
     // 创建用于保存ref表示的容器
     this.pw = React.createRef()
     this.edit = React.createRef()
     // 保存是否更新的表示
-    this.isUpdate = !!product
+    this.isUpdate = !!product._id
     this.product = product || {}
   }
   state = {

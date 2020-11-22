@@ -5,6 +5,7 @@ import { PlusOutlined } from '@ant-design/icons'
 import LinkButton from '../../components/link-button'
 import { reqProducts, reqSearchProducts, reqUpdateStatus } from '../../api'
 import { PAGE_SIZE } from '../../utils/constants'
+import memoryUtils from '../../utils/memoryUtils'
 
 const Option = Select.Option
 // product的默认子路由组件
@@ -52,18 +53,10 @@ export default class ProductHome extends Component {
           return (
             <span>
               {/*将product对象使用state传递给目标路由组件*/}
-              <LinkButton
-                onClick={() =>
-                  this.props.history.push('/product/detail', { product })
-                }
-              >
+              <LinkButton onClick={() => this.showDetail(product)}>
                 详情
               </LinkButton>
-              <LinkButton
-                onClick={() =>
-                  this.props.history.push('/product/addupdate', product)
-                }
-              >
+              <LinkButton onClick={() => this.showUpdate(product)}>
                 修改
               </LinkButton>
             </span>
@@ -78,6 +71,14 @@ export default class ProductHome extends Component {
     loading: false, // 是否正在加载中
     searchName: '', // 搜索的关键字
     searchType: 'productName' // 根据哪个字段搜索
+  }
+  showDetail = (product) => {
+    memoryUtils.product = product
+    this.props.history.push('/product/detail')
+  }
+  showUpdate = (product) => {
+    memoryUtils.product = product
+    this.props.history.push('/product/addupdate')
   }
   // 获得商品列表
   getProducts = async (pageNum) => {
