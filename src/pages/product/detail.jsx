@@ -45,6 +45,9 @@ export default class ProductDetail extends Component {
       })
     }
   }
+  componentWillUnmount() {
+    memoryUtils.product = {}
+  }
   render() {
     // 读取携带过来的state数据
     const { name, desc, price, detail, imgs } = memoryUtils.product

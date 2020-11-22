@@ -108,6 +108,9 @@ export default class ProductAddUpdate extends Component {
   componentDidMount() {
     this.getCategorys()
   }
+  componentWillUnmount() {
+    memoryUtils.product = {}
+  }
   // 表单提交事件
   handleSubmit = () => {
     // 表单对象
